@@ -9,7 +9,37 @@ import Image, ImageTk
 import time
 	
 class App():
-			
+
+	
+	def set_path(self, str):
+		#You still need to figure out the timing of this
+		if str == "Clear":
+			return "./WeatherIcons/Sunny.png"
+		
+		if str == "Fog":
+			return "./WeatherIcons/Fog.png"
+		
+
+		if str == "Haze": 
+			return "./WeatherIcons/Haze.png"
+		
+
+		if str == "Rain":
+			return "./WeatherIcons/HeavyRain.png"
+		
+		#Again, still need to figure the time
+		if str == "Partly Cloudy": 
+			return "./WeatherIcons/PartlyCloudy.png"
+		
+		if str == "Sunny":
+			return "./WeatherIcons/Sunny.png"
+		
+		if str == "Windy":
+			return "./WeatherIcons/Windy.png"
+		
+
+
+		
 	def __init__(self):
 
 		API_key ='77a19323c1f5772016293f6b30b52d15'
@@ -41,7 +71,7 @@ class App():
 		self.weatherLabel = Label(text = curWeather,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.weatherLabel.grid(row = 1, column = 2, stick = E)
 		
-		path = "Clear Night.png"
+		path = self.set_path(curWeather)
 
 		img = ImageTk.PhotoImage(Image.open(path))
 		self.iconLabel = Label(image = img,  bg = "black", fg = "white", font=("Comic Sans", 45))
