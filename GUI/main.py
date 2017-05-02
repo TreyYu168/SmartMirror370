@@ -5,8 +5,12 @@
 
 from Tkinter import *
 from pyowm import OWM
+from PIL import Image, ImageTk
+from resizeimage import resizeimage
+import io
 import Image, ImageTk
 import time
+import urllib
 	
 class App():
 
@@ -54,6 +58,11 @@ class App():
 		curWeather = w.get_status()
 		curTemp = w.get_temperature('fahrenheit')['temp']
 		
+		url = 'http://openweathermap.org/img/w/' + str(w.get_weather_icon_name()) + '.png'
+		raw_data = urllib.urlopen(url).read()
+		im = Image.open(io.BytesIO(raw_data))
+		im = im.resize((150, 150), Image.ANTIALIAS)
+		
 		#######################################################
 
 		
@@ -72,9 +81,9 @@ class App():
 		self.weatherLabel = Label(text = curWeather,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.weatherLabel.grid(row = 1, column = 2, stick = E)
 		
-		path = self.set_path(curWeather)
-
-		img = ImageTk.PhotoImage(Image.open(path))
+		#path = self.set_path(curWeather)
+		img = ImageTk.PhotoImage(im)
+		#img = Image.open(StringIO(response.content))		
 		self.iconLabel = Label(image = img,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.iconLabel.grid(row = 0, rowspan = 2, column = 3, sticky = E)
 
