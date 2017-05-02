@@ -13,37 +13,6 @@ import time
 import urllib
 	
 class App():
-
-	
-	def set_path(self, str):
-		#You still need to figure out the timing of this
-		if str == "Clear":
-			return "./WeatherIcons/Sunny.png"
-		
-		if str == "Fog":
-			return "./WeatherIcons/Fog.png"
-		
-
-		if str == "Haze": 
-			return "./WeatherIcons/Haze.png"
-		
-
-		if str == "Rain":
-			return "./WeatherIcons/HeavyRain.png"
-		
-		#Again, still need to figure the time
-		if str == "Clouds": 
-			return "./WeatherIcons/PartlyCloudy.png"
-		
-		if str == "Sunny":
-			return "./WeatherIcons/Sunny.png"
-		
-		if str == "Windy":
-			return "./WeatherIcons/Windy.png"
-		
-		else:
-			return "./WeatherIcons/Thunderstorm.png"
-
 		
 	def __init__(self):
 
@@ -81,9 +50,8 @@ class App():
 		self.weatherLabel = Label(text = curWeather,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.weatherLabel.grid(row = 1, column = 2, stick = E)
 		
-		#path = self.set_path(curWeather)
 		img = ImageTk.PhotoImage(im)
-		#img = Image.open(StringIO(response.content))		
+
 		self.iconLabel = Label(image = img,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.iconLabel.grid(row = 0, rowspan = 2, column = 3, sticky = E)
 
