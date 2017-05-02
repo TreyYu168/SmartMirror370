@@ -3,15 +3,16 @@
 # and open the template in the editor.
 
 
-from Tkinter import *
+from tkinter import *
 from pyowm import OWM
 from PIL import Image, ImageTk
-from resizeimage import resizeimage
+#import resizeimage
 import io
-import Image, ImageTk
 import time
-import urllib
-	
+from urllib.request import urlopen
+import face_recognition
+import subprocess
+
 class App():
 		
 	def __init__(self):
@@ -28,13 +29,12 @@ class App():
 		curTemp = w.get_temperature('fahrenheit')['temp']
 		
 		url = 'http://openweathermap.org/img/w/' + str(w.get_weather_icon_name()) + '.png'
-		raw_data = urllib.urlopen(url).read()
+		raw_data = urlopen(url).read()
 		im = Image.open(io.BytesIO(raw_data))
 		im = im.resize((150, 150), Image.ANTIALIAS)
 		
 		#######################################################
 
-		
 		#######################################################
 		self.root = Tk()
 		self.root.configure(background = "black")
@@ -58,6 +58,7 @@ class App():
 		self.root.columnconfigure(1, weight = 3)
 
 		self.update_clock()
+		self.update_text()
 		self.root.attributes("-fullscreen", True)
 		self.root.mainloop()
 
@@ -65,6 +66,38 @@ class App():
 		now = time.strftime("%H:%M")
 		self.timeLabel.configure(text = now)
 		self.root.after(60000, self.update_clock)
+
+	def update_text(self):
+		currentText = "Hello"
+		subprocess.call("./capture.sh", shell=True)
+
+		trey_image = face_recognition.load_image_file("Trey_Yu.jpg")
+		trey_face_encoding = face_recognition.face_encodings(trey_image)[0]
+
+
+		jake_image = face_recognition.load_image_file("Jake_Marrapode.jpg")
+		jake_face_encoding = face_recognition.face_encodings(jake_image)[0]
+
+		face_locations = []
+		face_encodings = []
+		image = face_recognition.load_image_file("./CurrentPic/MaybeFace.jpg")
+
+		face_locations = face_recognition.face_locations(image)
+
+		face_encodings = face_recognition.face_encodings(image, face_locations)
+		
+		for face_encoding in face_encodings:
+			treymatch = face_recognition.compare_faces([trey_face_encoding], face_encoding)
+			jakematch = face_recognition.compare_faces([jake_face_encoding], face_encoding)
+
+			if treymatch[0]:
+				currentText = "Hello Trey"
+		
+			if jakematch[0]:
+				currentText = "Hello Jake"
+
+		self.quoteLabel.configure(text = currentText)
+		self.root.after(15000, self.update_text)
 
 		
 app = App()
