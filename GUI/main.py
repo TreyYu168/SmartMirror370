@@ -28,7 +28,7 @@ class App():
 			return "./WeatherIcons/HeavyRain.png"
 		
 		#Again, still need to figure the time
-		if str == "Partly Cloudy": 
+		if str == "Clouds": 
 			return "./WeatherIcons/PartlyCloudy.png"
 		
 		if str == "Sunny":
@@ -37,7 +37,8 @@ class App():
 		if str == "Windy":
 			return "./WeatherIcons/Windy.png"
 		
-
+		else:
+			return "./WeatherIcons/Thunderstorm.png"
 
 		
 	def __init__(self):
@@ -89,5 +90,4 @@ class App():
 		self.root.after(60000, self.update_clock)
 
 		
-app=App()
-
+app = App()
