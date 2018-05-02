@@ -14,30 +14,25 @@ import face_recognition
 import subprocess
 
 class App():
-		
-	def __init__(self):
-
-		API_key ='77a19323c1f5772016293f6b30b52d15'
-		owm = OWM(API_key)
-
-		obs = owm.weather_at_place('Fort Collins, US')
-		loc = obs.get_location()
-		w = obs.get_weather()
 	
-		cityName = loc.get_name()
-		curWeather = w.get_status()
-		curTemp = w.get_temperature('fahrenheit')['temp']
-		
-		url = 'http://openweathermap.org/img/w/' + str(w.get_weather_icon_name()) + '.png'
-		raw_data = urlopen(url).read()
-		im = Image.open(io.BytesIO(raw_data))
-		im = im.resize((150, 150), Image.ANTIALIAS)
-		
-		#######################################################
 
-		#######################################################
+	def __init__(self):
+		API_key ='77a19323c1f5772016293f6b30b52d15'
+		self.owm = OWM(API_key)
+
 		self.root = Tk()
+
 		self.root.configure(background = "black")
+		self.root.bind("<Key>", self.key)
+		
+		self.mainScreen()
+
+		self.update_clock()
+		#self.update_text()
+		self.root.attributes("-fullscreen", True)
+		self.root.mainloop()
+
+	def mainScreen(self):
 
 		self.timeLabel = Label(text = "", bg = "black", fg = "white", font=("Comic Sans", 60))
 		self.timeLabel.grid(row=0, column=0)
@@ -45,22 +40,37 @@ class App():
 		self.quoteLabel = Label(text = "Hey Sexy", bg = "black", fg = "white", font=("Courier", 30))
 		self.quoteLabel.grid(row = 1, column = 1)
 		
-		self.tempLabel = Label(text = '%.0f'%(curTemp) + u'\u00B0' + "F",  bg = "black", fg = "white", font=("Comic Sans", 45))
+		self.weatherInfo()
+		self.tempLabel = Label(text = '%.0f'%(self.curTemp) + u'\u00B0' + "F",  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.tempLabel.grid(row = 0, column = 2)		
-		self.weatherLabel = Label(text = curWeather,  bg = "black", fg = "white", font=("Comic Sans", 45))
+		
+		self.weatherLabel = Label(text = self.curWeather,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.weatherLabel.grid(row = 1, column = 2, stick = E)
 		
-		img = ImageTk.PhotoImage(im)
+		img = ImageTk.PhotoImage(self.im)
 
 		self.iconLabel = Label(image = img,  bg = "black", fg = "white", font=("Comic Sans", 45))
 		self.iconLabel.grid(row = 0, rowspan = 2, column = 3, sticky = E)
 
 		self.root.columnconfigure(1, weight = 3)
 
-		self.update_clock()
-		self.update_text()
-		self.root.attributes("-fullscreen", True)
-		self.root.mainloop()
+	def rightScreen(self):
+		self.quoteLabel.destroy()
+		self.tempLabel.destroy()
+		self.weatherLabel.destroy()
+
+		self.quoteLabel = Label(text = "Right Screen", bg = "black", fg = "white", font=("Courier", 30))
+		self.quoteLabel.grid(row = 1, column = 1)
+
+
+	def leftScreen(self):
+		self.quoteLabel.destroy()
+		self.tempLabel.destroy()
+		self.weatherLabel.destroy()
+
+		self.quoteLabel = Label(text = "Left Screen", bg = "black", fg = "white", font=("Courier", 30))
+		self.quoteLabel.grid(row = 1, column = 1)
+
 
 	def update_clock(self):
 		now = time.strftime("%H:%M")
@@ -99,5 +109,28 @@ class App():
 		self.quoteLabel.configure(text = currentText)
 		self.root.after(15000, self.update_text)
 
-		
+	def weatherInfo(self):
+		obs = self.owm.weather_at_place('Fort Collins, US')
+		loc = obs.get_location()
+		w = obs.get_weather()
+	
+		self.cityName = loc.get_name()
+		self.curWeather = w.get_status()
+		self.curTemp = w.get_temperature('fahrenheit')['temp']
+
+		url = 'http://openweathermap.org/img/w/' + str(w.get_weather_icon_name()) + '.png'
+		raw_data = urlopen(url).read()
+		self.im = Image.open(io.BytesIO(raw_data))
+		self.im = self.im.resize((150, 150), Image.ANTIALIAS)
+
+	def key(self, event):
+		print(repr(event.char))
+		if event.char == "\uf702":
+			self.leftScreen()
+		elif event.char == "\uf703":
+			self.rightScreen()
+		else:
+			self.quoteLabel.destroy()
+			self.mainScreen()
+
 app = App()
