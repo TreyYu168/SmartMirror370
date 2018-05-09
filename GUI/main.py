@@ -6,12 +6,12 @@
 from tkinter import *
 from pyowm import OWM
 from PIL import Image, ImageTk
-#import resizeimage
 import io
 import time
 from urllib.request import urlopen
 import face_recognition
 import subprocess
+import feedparser
 
 class App():
 	
@@ -27,7 +27,6 @@ class App():
 		
 		self.mainScreen()
 
-		self.update_clock()
 		#self.update_text()
 		self.root.attributes("-fullscreen", True)
 		self.root.mainloop()
@@ -54,22 +53,47 @@ class App():
 
 		self.root.columnconfigure(1, weight = 3)
 
+		self.update_clock()
+
+
 	def rightScreen(self):
-		self.quoteLabel.destroy()
-		self.tempLabel.destroy()
-		self.weatherLabel.destroy()
+
+
+		self.timeLabel = Label(text = "", bg = "black", fg = "white", font=("Comic Sans", 60))
+		self.timeLabel.grid(row=0, column=0)
 
 		self.quoteLabel = Label(text = "Right Screen", bg = "black", fg = "white", font=("Courier", 30))
 		self.quoteLabel.grid(row = 1, column = 1)
 
+		self.placeHolder = Label(text = "   ", bg = "black", fg = "white")
+		self.placeHolder.grid(row = 0, rowspan = 2, column = 2, columnspan = 2, sticky = E)
+
+		self.update_clock()
+
+
 
 	def leftScreen(self):
-		self.quoteLabel.destroy()
-		self.tempLabel.destroy()
-		self.weatherLabel.destroy()
 
-		self.quoteLabel = Label(text = "Left Screen", bg = "black", fg = "white", font=("Courier", 30))
-		self.quoteLabel.grid(row = 1, column = 1)
+
+		self.timeLabel = Label(text = "", bg = "black", fg = "white", font=("Comic Sans", 60))
+		self.timeLabel.grid(row=0, column=0)
+
+		self.news = self.getNewsArticle()
+
+		self.quoteLabel = Label(text = "News Feed", bg = "black", fg = "white", font=("Courier", 45))
+		self.quoteLabel.grid(row = 1, column = 1, sticky = W)
+
+		currRow = 2
+		for i in range(0, len(self.news)):
+			titleLabel = Label(text = self.news[i][0], bg = "black", fg = "white", font=("Courier", 25), anchor = W)
+			descriptionLabel = Label(text = self.news[i][1], bg = "black", fg = "white", font=("Courier", 14), anchor = W)
+
+			currRow = currRow + 1
+			titleLabel.grid(row = currRow, column = 1, sticky = W)
+			currRow = currRow + 1
+			descriptionLabel.grid(row = currRow, column = 1, sticky = W)
+
+		self.update_clock()
 
 
 	def update_clock(self):
@@ -123,14 +147,40 @@ class App():
 		self.im = Image.open(io.BytesIO(raw_data))
 		self.im = self.im.resize((150, 150), Image.ANTIALIAS)
 
+	def getNewsArticle(self):
+		python_rss_url = "http://rss.cnn.com/rss/cnn_topstories.rss"
+		feed = feedparser.parse(python_rss_url)
+
+		seperator = "<"
+		numberOfNews = len(feed)
+		title = feed["channel"]["title"]
+		description = feed["channel"]["description"]
+
+		newsArticle = []
+
+		for i in range(0, numberOfNews):
+			articleTitle = feed.entries[i].title
+			articleFullSummary = feed.entries[i].summary
+			articleSummary = articleFullSummary.split(seperator, 1)[0]
+			if articleSummary == "":
+				articleSummary = "No Summary Available"
+			else: 
+				articleSummary = articleFullSummary.split(seperator, 1)[0]
+		
+			article = [articleTitle, articleSummary]
+			newsArticle.append(article)
+
+		return newsArticle
+
 	def key(self, event):
-		print(repr(event.char))
 		if event.char == "\uf702":
+			for label in self.root.winfo_children(): label.destroy()
 			self.leftScreen()
 		elif event.char == "\uf703":
+			for label in self.root.winfo_children(): label.destroy()
 			self.rightScreen()
 		else:
-			self.quoteLabel.destroy()
+			for label in self.root.winfo_children(): label.destroy()
 			self.mainScreen()
 
 app = App()
